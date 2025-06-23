@@ -8,33 +8,28 @@ class TestLoginCourier:
     @allure.description("Ручка api/v1/courier/login")
     def test_login_courier_success(self, created_courier):
         login_data = {
-            "login": created_courier["login"],
-            "password": created_courier["password"]
+            "login": created_courier[0]["login"],
+            "password": created_courier[0]["password"]
         }
         response = requests.post(f"{test_data.TestData.LOGIN_URL}", data=login_data)
-        assert response.status_code == 200
-        assert "id" in response.json()
+        assert response.status_code == test_data.TestData.success_login_response['status_code']
+        assert test_data.TestData.success_login_response['message'] in response.json()
 
     @allure.title("Проверяем невозможность логина с неправильным паролем и ответ - Учетная запись не найдена")
     @allure.description("Ручка api/v1/courier/login")
     def test_login_with_wrong_password(self, created_courier):
         response = requests.post(f"{test_data.TestData.LOGIN_URL}", data={
-            "login": created_courier["login"],
+            "login": created_courier[0]["login"],
             "password": "wrongpassword"
         })
-        assert response.status_code == 404
-        assert "Учетная запись не найдена" in response.text
+        assert response.status_code == test_data.TestData.wrong_password_login_response['status_code']
+        assert test_data.TestData.wrong_password_login_response['message'] in response.text
 
     @allure.title("Проверяем невозможность логина курьера при отсутствии логина или пароля")
     @allure.description("Ручка api/v1/courier/login")
-    @pytest.mark.parametrize("missing_field", ["login", "password"])
-    def test_login_missing_field(self, missing_field, created_courier):
-        data = {}
-        if missing_field != "login":
-            data["login"] = created_courier["login"]
-        if missing_field != "password":
-            data["password"] = created_courier["password"]
+    @pytest.mark.parametrize('data_number', [1, 2])
+    def test_login_missing_field(self, data_number, created_courier):
 
-        response = requests.post(f"{test_data.TestData.LOGIN_URL}", json=data)
-        assert response.status_code == 400
-        assert "Недостаточно данных" in response.text
+        response = requests.post(f"{test_data.TestData.LOGIN_URL}", json=created_courier[data_number])
+        assert response.status_code == test_data.TestData.missing_data_login_response['status_code']
+        assert test_data.TestData.missing_data_login_response['message'] in response.text

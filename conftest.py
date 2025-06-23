@@ -36,8 +36,7 @@ def courier_data():
 # зарегистрированный курьер (возвращает login, password, id)
 @pytest.fixture
 def created_courier(courier_data):
-    response = requests.post(f"{test_data.TestData.COURIER_URL}", data=courier_data)
-    assert response.status_code == 201
+    requests.post(f"{test_data.TestData.COURIER_URL}", data=courier_data)
 
     login_data = {
         "login": courier_data["login"],
@@ -46,12 +45,20 @@ def created_courier(courier_data):
     login_response = requests.post(f"{test_data.TestData.LOGIN_URL}", data=login_data)
 
     courier_id = login_response.json().get("id")
-
-    yield {
+    courier_data_original = {
         "login": courier_data["login"],
         "password": courier_data["password"],
         "id": courier_id
     }
+    login_data_without_password = {
+        "login": courier_data["login"],
+        "password": None
+    }
+    login_data_without_login = {
+        "login": None,
+        "password": courier_data["password"]
+    }
+    yield [courier_data_original, login_data_without_login, login_data_without_password]
 
     requests.delete(f"{test_data.TestData.COURIER_URL}/{courier_id}")
 

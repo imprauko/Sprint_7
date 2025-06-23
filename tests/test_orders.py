@@ -16,14 +16,14 @@ class TestOrders:
     def test_create_order_with_various_colors(self, color, created_order):
         response = created_order(color)
 
-        assert response.status_code == 201
+        assert response.status_code == test_data.TestData.success_order_response['status_code']
         response_json = response.json()
-        assert "track" in response_json
+        assert test_data.TestData.success_order_response['message'] in response_json
 
     @allure.title("Проверяем запрос всего списка заказов")
     @allure.description("Ручка api/v1/orders")
     def test_get_orders_list(self):
 
         response = requests.get(f"{test_data.TestData.ORDERS_URL}")
-        assert response.status_code == 200
-        assert isinstance(response.json().get("orders"), list)
+        assert response.status_code == test_data.TestData.success_order_list_response['status_code']
+        assert isinstance(response.json().get(test_data.TestData.success_order_list_response['message']), list)

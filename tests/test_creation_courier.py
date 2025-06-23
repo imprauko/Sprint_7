@@ -8,21 +8,21 @@ class TestCourierCreation:
     @allure.description("Ручка api/v1/courier")
     def test_create_courier_success(self, courier_data):
         response = requests.post(f"{test_data.TestData.COURIER_URL}", data=courier_data)
-        assert response.status_code == 201
-        assert response.json().get("ok") is True
+        assert response.status_code == test_data.TestData.success_create_courier_response['status_code']
+        assert response.json().get(test_data.TestData.success_create_courier_response['message']) is True
 
 
     @allure.title("Проверяем невозможность создания дубля курьера")
     @allure.description("Ручка api/v1/courier")
     def test_create_duplicate_courier(self, created_courier):
         duplicate_data = {
-            "login": created_courier["login"],
-            "password": created_courier["password"],
+            "login": created_courier[0]["login"],
+            "password": created_courier[0]["password"],
             "firstName": "Любой"
         }
         response = requests.post(f"{test_data.TestData.COURIER_URL}", data=duplicate_data)
-        assert response.status_code == 409
-        assert "Этот логин уже используется" in response.text
+        assert response.status_code == test_data.TestData.double_data_create_courier_response['status_code']
+        assert test_data.TestData.double_data_create_courier_response['message'] in response.text
 
     #поле Name - не обязательно
     @allure.title("Проверка обязательности поля Login и Password при создании нового курьера")
@@ -32,5 +32,5 @@ class TestCourierCreation:
 
         courier_data.pop(missing_field)
         response = requests.post(f"{test_data.TestData.COURIER_URL}", data=courier_data)
-        assert response.status_code == 400
-        assert "Недостаточно данных" in response.text
+        assert response.status_code == test_data.TestData.missing_data_create_courier_response['status_code']
+        assert test_data.TestData.missing_data_create_courier_response['message'] in response.text

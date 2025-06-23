@@ -16,3 +16,14 @@ class TestData:
             "deliveryDate": "2025-06-20",
             "comment": "Тестовый заказ"
         }
+
+    success_login_response = {'status_code' : 200, 'message' : "id"}
+    wrong_password_login_response = {'status_code': 404, 'message' : "Учетная запись не найдена"}
+    missing_data_login_response = {'status_code': 400, 'message': "Недостаточно данных"}
+
+    success_order_response = {'status_code': 201, 'message' : "track"}
+    success_order_list_response = {'status_code': 200, 'message': "orders"}
+
+    success_create_courier_response = {'status_code': 201, 'message': "ok"}
+    double_data_create_courier_response = {'status_code': 409, 'message': "Этот логин уже используется"}
+    missing_data_create_courier_response = {'status_code': 400, 'message': "Недостаточно данных"}
